@@ -1,0 +1,291 @@
+[gd_scene load_steps=9 format=2]
+
+[ext_resource path="res://Draw.gd" type="Script" id=1]
+[ext_resource path="res://Whacky_Joe.ttf" type="DynamicFontData" id=2]
+[ext_resource path="res://theme.tres" type="Theme" id=3]
+[ext_resource path="res://addons/Recorder/recorder_icon.png" type="Texture" id=4]
+[ext_resource path="res://addons/Recorder/recorder.gd" type="Script" id=5]
+[ext_resource path="res://LayerButton.tscn" type="PackedScene" id=6]
+[ext_resource path="res://LayerContainer.tscn" type="PackedScene" id=7]
+
+[sub_resource type="DynamicFont" id=1]
+font_data = ExtResource( 2 )
+
+[node name="Draw" type="Node2D"]
+script = ExtResource( 1 )
+__meta__ = {
+"_editor_description_": "#if mouse moves and left button is pressed, create a new instance line2d 
+#if mouse button released, then end that instance 
+
+#if save button pressed, save viewport as png
+
+#Bug: Instances 2 new line2ds per line
+#Bug: Changing line size text doesn't adjust line width slider
+
+
+
+#func _process(_delta: float) -> void:
+#	if (not pen_on_canvas): return
+#	if Input.is_action_pressed('Draw'):
+#		pen_line2d.add_point(viewport.get_mouse_position())
+#	elif Input.is_action_just_released('Draw'):
+#		instance_new_pen_stroke()"
+}
+
+[node name="ColorRect" type="ColorRect" parent="."]
+margin_left = -13.0
+margin_top = -11.0
+margin_right = 1440.0
+margin_bottom = 821.0
+color = Color( 0.168627, 0.184314, 0.223529, 1 )
+
+[node name="UI" type="Control" parent="."]
+margin_right = 795.0
+margin_bottom = 601.0
+
+[node name="HBoxContainer" type="HBoxContainer" parent="UI"]
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+margin_left = 82.5
+margin_top = -298.5
+margin_right = 994.5
+margin_bottom = -256.5
+grow_horizontal = 2
+grow_vertical = 2
+size_flags_horizontal = 0
+
+[node name="UndoButton" type="Button" parent="UI/HBoxContainer"]
+margin_right = 301.0
+margin_bottom = 42.0
+size_flags_horizontal = 3
+custom_fonts/font = SubResource( 1 )
+text = "undo"
+
+[node name="RedoButton" type="Button" parent="UI/HBoxContainer"]
+margin_left = 305.0
+margin_right = 606.0
+margin_bottom = 42.0
+size_flags_horizontal = 3
+custom_fonts/font = SubResource( 1 )
+text = "redo"
+
+[node name="ClearButton" type="Button" parent="UI/HBoxContainer"]
+margin_left = 610.0
+margin_right = 912.0
+margin_bottom = 42.0
+size_flags_horizontal = 3
+custom_fonts/font = SubResource( 1 )
+text = "clear"
+
+[node name="SaveButton" type="Button" parent="UI/HBoxContainer"]
+visible = false
+margin_left = 687.0
+margin_right = 912.0
+margin_bottom = 42.0
+size_flags_horizontal = 3
+custom_fonts/font = SubResource( 1 )
+text = "save"
+
+[node name="FileDialog" type="FileDialog" parent="UI"]
+margin_left = 328.0
+margin_top = 161.0
+margin_right = 1153.0
+margin_bottom = 690.0
+theme = ExtResource( 3 )
+access = 2
+
+[node name="VBoxContainer" type="VBoxContainer" parent="UI"]
+margin_right = 454.0
+margin_bottom = 524.0
+
+[node name="ColorPicker" type="ColorPicker" parent="UI/VBoxContainer"]
+margin_right = 454.0
+margin_bottom = 524.0
+theme = ExtResource( 3 )
+
+[node name="PenSizeGroup" type="HBoxContainer" parent="UI/VBoxContainer"]
+margin_top = 528.0
+margin_right = 454.0
+margin_bottom = 552.0
+
+[node name="PenSizeLabel" type="Label" parent="UI/VBoxContainer/PenSizeGroup"]
+margin_right = 101.0
+margin_bottom = 23.0
+theme = ExtResource( 3 )
+text = "pen size"
+
+[node name="PenSizeSlider" type="HSlider" parent="UI/VBoxContainer/PenSizeGroup"]
+margin_left = 105.0
+margin_right = 392.0
+margin_bottom = 16.0
+size_flags_horizontal = 3
+
+[node name="PenSizeLineEdit" type="LineEdit" parent="UI/VBoxContainer/PenSizeGroup"]
+margin_left = 396.0
+margin_right = 454.0
+margin_bottom = 24.0
+
+[node name="WobbleParamLabel" type="HBoxContainer" parent="UI/VBoxContainer"]
+margin_top = 556.0
+margin_right = 454.0
+margin_bottom = 579.0
+
+[node name="WobbleGroupLabel" type="Label" parent="UI/VBoxContainer/WobbleParamLabel"]
+margin_right = 229.0
+margin_bottom = 23.0
+theme = ExtResource( 3 )
+text = "wobble parameters"
+
+[node name="NormalOffsetGroup" type="HBoxContainer" parent="UI/VBoxContainer"]
+margin_top = 583.0
+margin_right = 454.0
+margin_bottom = 607.0
+
+[node name="NormalOffsetLabel" type="Label" parent="UI/VBoxContainer/NormalOffsetGroup"]
+margin_right = 179.0
+margin_bottom = 23.0
+theme = ExtResource( 3 )
+text = "line roughness"
+
+[node name="NormalOffsetSlider" type="HSlider" parent="UI/VBoxContainer/NormalOffsetGroup"]
+margin_left = 183.0
+margin_right = 392.0
+margin_bottom = 16.0
+size_flags_horizontal = 3
+max_value = 20.0
+
+[node name="NormalOffsetLineEdit" type="LineEdit" parent="UI/VBoxContainer/NormalOffsetGroup"]
+margin_left = 396.0
+margin_right = 454.0
+margin_bottom = 24.0
+
+[node name="TimeInfluenceGroup" type="HBoxContainer" parent="UI/VBoxContainer"]
+margin_top = 611.0
+margin_right = 454.0
+margin_bottom = 635.0
+
+[node name="TimeInfluenceLabel" type="Label" parent="UI/VBoxContainer/TimeInfluenceGroup"]
+margin_right = 158.0
+margin_bottom = 23.0
+theme = ExtResource( 3 )
+text = "shakey speed"
+
+[node name="TimeInfluenceSlider" type="HSlider" parent="UI/VBoxContainer/TimeInfluenceGroup"]
+margin_left = 162.0
+margin_right = 392.0
+margin_bottom = 16.0
+size_flags_horizontal = 3
+max_value = 30.0
+
+[node name="TimeInfluenceLineEdit" type="LineEdit" parent="UI/VBoxContainer/TimeInfluenceGroup"]
+margin_left = 396.0
+margin_right = 454.0
+margin_bottom = 24.0
+
+[node name="YDivGroup" type="HBoxContainer" parent="UI/VBoxContainer"]
+margin_top = 639.0
+margin_right = 454.0
+margin_bottom = 663.0
+
+[node name="YDivLabel" type="Label" parent="UI/VBoxContainer/YDivGroup"]
+margin_right = 69.0
+margin_bottom = 23.0
+theme = ExtResource( 3 )
+text = "wiggly"
+
+[node name="YDivSlider" type="HSlider" parent="UI/VBoxContainer/YDivGroup"]
+margin_left = 73.0
+margin_right = 392.0
+margin_bottom = 16.0
+size_flags_horizontal = 3
+max_value = 30.0
+
+[node name="YDivLineEdit" type="LineEdit" parent="UI/VBoxContainer/YDivGroup"]
+margin_left = 396.0
+margin_right = 454.0
+margin_bottom = 24.0
+
+[node name="HSeparator" type="HSeparator" parent="UI/VBoxContainer"]
+margin_top = 667.0
+margin_right = 454.0
+margin_bottom = 671.0
+
+[node name="Layers" type="VBoxContainer" parent="UI/VBoxContainer"]
+margin_top = 675.0
+margin_right = 454.0
+margin_bottom = 737.0
+
+[node name="AddLayerButton" type="Button" parent="UI/VBoxContainer/Layers"]
+margin_right = 141.0
+margin_bottom = 29.0
+size_flags_horizontal = 0
+theme = ExtResource( 3 )
+text = "Add Layer"
+
+[node name="GridContainer" type="GridContainer" parent="UI/VBoxContainer/Layers"]
+margin_top = 33.0
+margin_right = 454.0
+margin_bottom = 62.0
+columns = 10
+
+[node name="Layer1Button" parent="UI/VBoxContainer/Layers/GridContainer" instance=ExtResource( 6 )]
+margin_right = 27.0
+text = "1"
+
+[node name="ViewportContainer" type="ViewportContainer" parent="UI"]
+margin_left = 479.0
+margin_top = 59.0
+margin_right = 1392.0
+margin_bottom = 783.0
+__meta__ = {
+"_editor_description_": "position
+x = 479
+y = 58
+
+size
+x = 913
+y = 724"
+}
+
+[node name="Viewport" type="Viewport" parent="UI/ViewportContainer"]
+size = Vector2( 913, 724 )
+handle_input_locally = false
+hdr = false
+disable_3d = true
+usage = 0
+render_target_update_mode = 3
+
+[node name="Layer1" parent="UI/ViewportContainer/Viewport" instance=ExtResource( 7 )]
+
+[node name="Recorder" type="ReferenceRect" parent="."]
+margin_left = 479.0
+margin_top = 59.0
+margin_right = 1392.0
+margin_bottom = 783.0
+mouse_filter = 2
+script = ExtResource( 5 )
+__meta__ = {
+"_editor_icon": ExtResource( 4 )
+}
+frames_per_second = 60.0
+
+[connection signal="pressed" from="UI/HBoxContainer/UndoButton" to="." method="_on_UndoButton_pressed"]
+[connection signal="pressed" from="UI/HBoxContainer/RedoButton" to="." method="_on_RedoButton_pressed"]
+[connection signal="pressed" from="UI/HBoxContainer/ClearButton" to="." method="_on_ClearButton_pressed"]
+[connection signal="pressed" from="UI/HBoxContainer/SaveButton" to="." method="_on_SaveButton_pressed"]
+[connection signal="confirmed" from="UI/FileDialog" to="." method="_on_FileDialog_confirmed"]
+[connection signal="color_changed" from="UI/VBoxContainer/ColorPicker" to="." method="_on_ColorPicker_color_changed"]
+[connection signal="value_changed" from="UI/VBoxContainer/PenSizeGroup/PenSizeSlider" to="." method="_on_HSlider_value_changed"]
+[connection signal="text_entered" from="UI/VBoxContainer/PenSizeGroup/PenSizeLineEdit" to="." method="_on_PenSizeLineEdit_text_entered"]
+[connection signal="value_changed" from="UI/VBoxContainer/NormalOffsetGroup/NormalOffsetSlider" to="." method="_on_NormalOffsetSlider_value_changed"]
+[connection signal="text_entered" from="UI/VBoxContainer/NormalOffsetGroup/NormalOffsetLineEdit" to="." method="_on_NormalOffsetLineEdit_text_entered"]
+[connection signal="value_changed" from="UI/VBoxContainer/TimeInfluenceGroup/TimeInfluenceSlider" to="." method="_on_TimeInfluenceSlider_value_changed"]
+[connection signal="text_entered" from="UI/VBoxContainer/TimeInfluenceGroup/TimeInfluenceLineEdit" to="." method="_on_TimeInfluenceLineEdit_text_entered"]
+[connection signal="value_changed" from="UI/VBoxContainer/YDivGroup/YDivSlider" to="." method="_on_YDivSlider_value_changed"]
+[connection signal="text_entered" from="UI/VBoxContainer/YDivGroup/YDivLineEdit" to="." method="_on_YDivLineEdit_text_entered"]
+[connection signal="pressed" from="UI/VBoxContainer/Layers/AddLayerButton" to="." method="_on_AddLayerButton_pressed"]
+[connection signal="pressed" from="UI/VBoxContainer/Layers/GridContainer/Layer1Button" to="." method="_on_Layer1Button_pressed"]
+[connection signal="mouse_entered" from="UI/ViewportContainer" to="." method="_on_ViewportContainer_mouse_entered"]
+[connection signal="mouse_exited" from="UI/ViewportContainer" to="." method="_on_ViewportContainer_mouse_exited"]
